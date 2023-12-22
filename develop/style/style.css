@@ -1,0 +1,48 @@
+:root {
+    --light: #DDE6ED;
+    --dark: #27374D;
+}
+
+header {
+    background: linear-gradient(to top, #99ccff 0%, #0000ff 94%);
+    padding: 1.5rem 0;
+    color: white;
+    
+}
+
+header h1{
+    font-weight: 650;
+}
+
+h3 {
+    font-weight: 600;
+}
+
+.list-group-item {
+    background-color: var(--dark);
+    color: white;
+}
+
+li {
+    font-weight: 400;
+    
+}
+
+h4 {
+    font-weight: 600;
+}
+
+.card-body {
+    background-color: var(--dark);
+    color: white;
+    padding: 1rem 2rem 1rem 1rem;
+}
+
+.card-body h5 {
+    font-weight: 600;
+}
+
+.card-body p {
+    font-weight: 400;
+}
+
