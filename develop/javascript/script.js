@@ -32,9 +32,11 @@ var sixthDayHumid = $("#sixth-humidity");
 
 var submitBtn = $("#submit");
 
-var userCity = "";
+var recentSearchOption = $(".recent-search-option");
 
-var userState = "";
+var userCity = [];
+
+var cityInput = "";
 
 var cityLat = null;
 var cityLon = null;
@@ -46,14 +48,15 @@ var fourthDayDate = dayjs().add(3, "day").format("YYYY-MM-DD");
 var fifthDayDate = dayjs().add(4, "day").format("YYYY-MM-DD");
 var sixthDayDate = dayjs().add(5, "day").format("YYYY-MM-DD");
 
+var recentSearchDiv = $("#recent-search")
 
+var todayWeather = {
+    temperature: null,
+    wind: null,
+    humidity: null
+}
 
 var forecast = {
-    today: {
-        temperature: null,
-        wind: null,
-        humidity: null
-    },
 
     tomorrow:{
         temperature: null,
@@ -88,73 +91,130 @@ var forecast = {
 
 submitBtn.on("click", function(event){
     event.preventDefault()
-    var cityInput = $("#floatingInput-city").val();
-    var stateInput = $("#floatingInput-state").val();
-    userCity = cityInput
-    userState = stateInput
-    getCoordinates()
+    if($("#floatingInput-city").val() === ""){
+        return;
+    };
+    cityInput = "";
+    cityInput = $("#floatingInput-city").val();
+    
 
+    getCoordinates();
 })
 
+function saveWeather(){
+    localStorage.setItem("city", JSON.stringify(userCity));
+}
 
-function getWeather(){
+function addCityToRecentSearch(){
+    userCity.push(cityInput)
+
+    var recentCity = $("<input>");
+    recentCity.addClass("btn btn-primary mb-3 p-3");
+    recentCity.attr("type", "button");
+    recentCity.attr("id", "new-recent");
+    recentCity.val(cityInput.charAt(0).toUpperCase() + cityInput.slice(1)); 
+    recentSearchDiv.prepend(recentCity);
+
+    var searchChildren = $("#recent-search").children()
+    for(var i = 0; i < searchChildren.length; i++){
+        if(i > 4){
+            searchChildren[i].remove();
+        };
+    }
+}
+
+function getTodayWeather(){
+   fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=16818c644b4e657d8ccc3aa7a2c735e0`)
+   .then(function(response){
+        return response.json()
+   })
+   .then(function(data){
+    console.log(data);
+
+    
+    todayWeather.humidity = data.main.humidity;
+    todayWeather.temperature = data.main.temp;
+    todayWeather.wind = data.wind.speed;
+   })
+}
+
+
+function getWeatherForecast(){
     fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=16818c644b4e657d8ccc3aa7a2c735e0`)
     .then(function(response){
         return response.json()
     })
     .then(function(data){
-        console.log(data)
         var lengths = {
-            todayLength : null,
             tomorrowLength : null,
             thirdDayLength : null,
             fourthDayLength : null,
             fifthDayLength : null,
             sixthDayLength : null,
-        }
+        };
+
+        forecast = {
+        
+            tomorrow:{
+                temperature: null,
+                wind: null,
+                humidity: null
+            },
+        
+            thirdDay:{
+                temperature: null,
+                wind: null,
+                humidity: null
+            },
+        
+            fourthDay:{
+                temperature: null,
+                wind: null,
+                humidity: null
+            },
+        
+            fifthDay:{
+                temperature: null,
+                wind: null,
+                humidity: null
+            },
+        
+            sixthDay:{
+                temperature: null,
+                wind: null,
+                humidity: null
+            }
+        };
         
         for(var i = 0; i < data.list.length; i++){
             var allData = data.list[i];
-            // console.log(allData);
             dataDate = allData.dt_txt.split(" ")[0];
 
-            if(dataDate === todayDate){
-                console.log(allData);
-                lengths.todayLength += 1;
-                forecast.today.humidity += allData.main.humidity;
-                forecast.today.wind += allData.wind.speed;
-                forecast.today.temperature += allData.main.temp;
-            }
-            else if(dataDate === tomorrowDate){
-                console.log(allData);
+            if(dataDate === tomorrowDate){
                 lengths.tomorrowLength += 1;
                 forecast.tomorrow.humidity += allData.main.humidity;
                 forecast.tomorrow.wind += allData.wind.speed;
                 forecast.tomorrow.temperature += allData.main.temp;
             }
             else if(dataDate === thirdDayDate){
-                console.log(allData);
                 lengths.thirdDayLength += 1;
                 forecast.thirdDay.humidity += allData.main.humidity;
                 forecast.thirdDay.wind += allData.wind.speed;
                 forecast.thirdDay.temperature += allData.main.temp;
             }
             else if(dataDate === fourthDayDate){
-                console.log(allData);
                 lengths.fourthDayLength += 1;
                 forecast.fourthDay.humidity += allData.main.humidity;
                 forecast.fourthDay.wind += allData.wind.speed;
                 forecast.fourthDay.temperature += allData.main.temp;
             }
             else if(dataDate === fifthDayDate){
-                console.log(allData);
                 lengths.fifthDayLength += 1;
                 forecast.fifthDay.humidity += allData.main.humidity;
                 forecast.fifthDay.wind += allData.wind.speed;
                 forecast.fifthDay.temperature += allData.main.temp;
             }
             else if(dataDate === sixthDayDate){
-                console.log(allData);
                 lengths.sixthDayLength += 1;
                 forecast.sixthDay.humidity += allData.main.humidity;
                 forecast.sixthDay.wind += allData.wind.speed;
@@ -170,25 +230,28 @@ function getWeather(){
 
 
 function getCoordinates(){
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${userCity}&limit=1&appid=66806939c1861a2ad06cc249d1a3a086`)
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=1&appid=66806939c1861a2ad06cc249d1a3a086`)
     .then(function (response){
-        return response.json()
+            return response.json()
+        
     })
     .then(function (data){
+        if(data[0] === undefined){
+            window.alert("Enter new city name");
+            return;
+        }
         cityLat = data[0].lat;
         cityLon = data[0].lon;
-        console.log(data);
-        getWeather();
+        addCityToRecentSearch();
+        saveWeather();
+        getTodayWeather();
+        getWeatherForecast();
     })
     
 }
 
 
 function getAverage(lengths){
-
-    forecast.today.humidity = Math.round(forecast.today.humidity / lengths.todayLength);
-    forecast.today.wind = Math.round(forecast.today.wind / lengths.todayLength);
-    forecast.today.temperature = Math.round(forecast.today.temperature / lengths.todayLength);
 
     forecast.tomorrow.humidity = Math.round(forecast.tomorrow.humidity / lengths.tomorrowLength);
     forecast.tomorrow.wind = Math.round(forecast.tomorrow.wind / lengths.tomorrowLength);
@@ -216,12 +279,12 @@ function getAverage(lengths){
 
 function displayWeather(){
 
-    userCity = userCity.charAt(0).toUpperCase() + userCity.slice(1);
-    displayCity.text(userCity + " " + dayjs().format("MMM/DD/YYYY"));
+    cityInput = cityInput.charAt(0).toUpperCase() + cityInput.slice(1);
+    displayCity.text(cityInput + " " + dayjs().format("MMM/DD/YYYY"));
 
-    todayTemp.text("Temp: " + forecast.today.temperature + "°F");
-    todayWind.text("Wind: " +forecast.today.wind + " MPH");    
-    todayHumid.text("Humidity: " +forecast.today.humidity + "%");
+    todayTemp.text("Temp: " + todayWeather.temperature + "°F");
+    todayWind.text("Wind: " +todayWeather.wind + " MPH");    
+    todayHumid.text("Humidity: " +todayWeather.humidity + "%");
 
     displayTomorrowDate.text(dayjs().add(1, "day").format("MMM/DD/YYYY"));
     tomorrowTemp.text("Temp: " + forecast.tomorrow.temperature + "°F");
@@ -248,5 +311,58 @@ function displayWeather(){
     sixthDayWind.text("Wind: " + forecast.sixthDay.wind + " MPH");
     sixthDayHumid.text("Humidity: " + forecast.sixthDay.humidity + "%");
 
+}
+
+function recentSearch(){
+
+    if(userCity !== null){
+        for(var i = 0; i < userCity.length; i++){
+            var recentCity = $("<input>");
+            recentCity.addClass("btn btn-primary mb-3 p-3");
+            recentCity.attr("type", "button");
+            recentCity.attr("id", "new-recent");
+            recentCity.val(userCity[i].charAt(0).toUpperCase() + userCity[i].slice(1)); 
+            recentSearchDiv.prepend(recentCity);
+            }
+            
+        }
+    
+    var searchChildren = $("#recent-search").children()
+    searchLength = searchChildren.length; 
+
+    for(var i = 0; i < searchLength; i++){
+        if(i > 4){
+            searchChildren[i].remove();
+        };
+    }
 
 }
+
+recentSearchOption.on("click", function(event){
+    cityInput = "";
+    cityInput = event.target.value;
+    console.log(event.target);
+    console.log(event.target.value);
+    getCoordinates();
+})
+
+$(document).on("click", "#new-recent", function(event){
+    cityInput = "";
+    cityInput = event.target.value;
+    console.log(event.target);
+    console.log(event.target.value);
+    getCoordinates();
+})
+
+
+function init(){
+    var savedCity = JSON.parse(localStorage.getItem("city"));
+    if(savedCity === null){
+        return
+    }else{
+        userCity = savedCity;
+        recentSearch()
+    }
+}
+
+init();
