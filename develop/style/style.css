@@ -1,8 +1,11 @@
+
+/* Declaring colors that can be used multiple times */
 :root {
     --light: #DDE6ED;
     --dark: #27374D;
 }
 
+/* changes background-color, padding and font color */
 header {
     background: linear-gradient(to bottom left, #003366 65%, #660066 100%);
     padding: 1.5rem 0;
@@ -10,44 +13,53 @@ header {
     
 }
 
+/* Making the font more bold */
 header h1{
     font-weight: 650;
 }
 
+/* Making the name and date for today next to the symbol */
 #today-date-icon{
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
+/* Making more dense */
 h3 {
     font-weight: 600;
 }
 
+/* Adding background color and font color */
 .list-group-item {
     background-color: var(--dark);
     color: white;
 }
 
+/* changing the boldness */
 li {
     font-weight: 400;
     
 }
 
+/* changing the boldness */
 h4 {
     font-weight: 600;
 }
 
+/* adding background color and padding */
 .card-body {
     background-color: var(--dark);
     color: white;
     padding: 1rem 2rem 1rem 1rem;
 }
 
+/* changing the boldness */
 .card-body h5 {
     font-weight: 600;
 }
 
+/* changing the boldness */
 .card-body p {
     font-weight: 400;
 }
