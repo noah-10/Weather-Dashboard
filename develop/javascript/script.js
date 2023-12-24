@@ -3,31 +3,37 @@ var displayCity = $("#display-name");
 var todayTemp = $("#today-temp");
 var todayWind = $("#today-wind");
 var todayHumid = $("#today-humidity");
+var todaySymbol = $("#today-symbol")
 
 var displayTomorrowDate = $("#tomorrow-date")
 var tomorrowTemp = $("#tomorrow-temp");
 var tomorrowWind = $("#tomorrow-wind");
 var tomorrowHumid = $("#tomorrow-humidity");
+var tomrorowSymbol = $("#tomorrow-symbol");
 
 var displayThirdDate = $("#thirdDay-date")
 var thirdDayTemp = $("#thirdDay-temp");
 var thirdDayWind = $("#thirdDay-wind");
 var thirdDayHumid = $("#thirdDay-humidity");
+var thirdDaySymbol = $("#thirdDay-symbol");
 
 var displayFourthDate = $("#fourth-date")
 var fourthDayTemp = $("#fourthDay-temp");
 var fourthDayWind = $("#fourthDay-wind");
 var fourthDayHumid = $("#fourthDay-humidity");
+var fourthDaySymbol = $("#fourthDay-symbol"); 
 
 var displayFifthDate = $("#fifth-date")
 var fifthDayTemp = $("#fifthDay-temp");
 var fifthDayWind = $("#fifthDay-wind");
 var fifthDayHumid = $("#fifthDay-humidity");
+var fifthDaySymbol = $("#fifthDay-symbol");
 
 var displaySixthDate = $("#sixth-date")
 var sixthDayTemp = $("#sixth-temp");
 var sixthDayWind = $("#sixth-wind");
 var sixthDayHumid = $("#sixth-humidity");
+var sixthDaySymbol = $("#sixthDay-symbol");
 
 
 var submitBtn = $("#submit");
@@ -53,7 +59,8 @@ var recentSearchDiv = $("#recent-search")
 var todayWeather = {
     temperature: null,
     wind: null,
-    humidity: null
+    humidity: null,
+    symbol: null
 }
 
 var forecast = {
@@ -61,33 +68,39 @@ var forecast = {
     tomorrow:{
         temperature: null,
         wind: null,
-        humidity: null
+        humidity: null, 
+        symbol: null
     },
 
     thirdDay:{
         temperature: null,
         wind: null,
-        humidity: null
+        humidity: null,
+        symbol: null
     },
 
     fourthDay:{
         temperature: null,
         wind: null,
-        humidity: null
+        humidity: null,
+        symbol: null
     },
 
     fifthDay:{
         temperature: null,
         wind: null,
-        humidity: null
+        humidity: null,
+        symbol: null
     },
 
     sixthDay:{
         temperature: null,
         wind: null,
-        humidity: null
+        humidity: null,
+        symbol: null
     }
 };
+
 
 submitBtn.on("click", function(event){
     event.preventDefault()
@@ -131,10 +144,18 @@ function getTodayWeather(){
    .then(function(data){
     console.log(data);
 
-    
     todayWeather.humidity = data.main.humidity;
     todayWeather.temperature = data.main.temp;
     todayWeather.wind = data.wind.speed;
+
+    var symbol = data.weather[0].icon;
+
+
+    todayWeather.symbol = `https://openweathermap.org/img/wn/${symbol}@2x.png`
+
+    todayImg = $("#today-symbol")
+    todayImg.attr("src", todayWeather.symbol);    
+
    })
 }
 
@@ -152,37 +173,42 @@ function getWeatherForecast(){
             fifthDayLength : null,
             sixthDayLength : null,
         };
-
+        console.log(data);
         forecast = {
         
             tomorrow:{
                 temperature: null,
                 wind: null,
-                humidity: null
+                humidity: null,
+                symbol: null
             },
         
             thirdDay:{
                 temperature: null,
                 wind: null,
-                humidity: null
+                humidity: null,
+                symbol: null
             },
         
             fourthDay:{
                 temperature: null,
                 wind: null,
-                humidity: null
+                humidity: null,
+                symbol: null
             },
         
             fifthDay:{
                 temperature: null,
                 wind: null,
-                humidity: null
+                humidity: null,
+                symbol: null
             },
         
             sixthDay:{
                 temperature: null,
                 wind: null,
-                humidity: null
+                humidity: null,
+                symbol: null
             }
         };
         
@@ -195,30 +221,35 @@ function getWeatherForecast(){
                 forecast.tomorrow.humidity += allData.main.humidity;
                 forecast.tomorrow.wind += allData.wind.speed;
                 forecast.tomorrow.temperature += allData.main.temp;
+                forecast.tomorrow.symbol = allData.weather[0].icon;
             }
             else if(dataDate === thirdDayDate){
                 lengths.thirdDayLength += 1;
                 forecast.thirdDay.humidity += allData.main.humidity;
                 forecast.thirdDay.wind += allData.wind.speed;
                 forecast.thirdDay.temperature += allData.main.temp;
+                forecast.thirdDay.symbol = allData.weather[0].icon;
             }
             else if(dataDate === fourthDayDate){
                 lengths.fourthDayLength += 1;
                 forecast.fourthDay.humidity += allData.main.humidity;
                 forecast.fourthDay.wind += allData.wind.speed;
                 forecast.fourthDay.temperature += allData.main.temp;
+                forecast.fourthDay.symbol = allData.weather[0].icon;
             }
             else if(dataDate === fifthDayDate){
                 lengths.fifthDayLength += 1;
                 forecast.fifthDay.humidity += allData.main.humidity;
                 forecast.fifthDay.wind += allData.wind.speed;
                 forecast.fifthDay.temperature += allData.main.temp;
+                forecast.fifthDay.symbol = allData.weather[0].icon;
             }
             else if(dataDate === sixthDayDate){
                 lengths.sixthDayLength += 1;
                 forecast.sixthDay.humidity += allData.main.humidity;
                 forecast.sixthDay.wind += allData.wind.speed;
                 forecast.sixthDay.temperature += allData.main.temp;
+                forecast.sixthDay.symbol = allData.weather[0].icon;
             }
         }
         getAverage(lengths);
@@ -286,30 +317,36 @@ function displayWeather(){
     todayWind.text("Wind: " +todayWeather.wind + " MPH");    
     todayHumid.text("Humidity: " +todayWeather.humidity + "%");
 
+
     displayTomorrowDate.text(dayjs().add(1, "day").format("MMM/DD/YYYY"));
     tomorrowTemp.text("Temp: " + forecast.tomorrow.temperature + "°F");
     tomorrowWind.text("Wind: " + forecast.tomorrow.wind + " MPH");
     tomorrowHumid.text("Humidity: " + forecast.tomorrow.humidity + "%");
+    tomrorowSymbol.attr("src", `https://openweathermap.org/img/wn/${forecast.tomorrow.symbol}@2x.png`);
 
     displayThirdDate.text(dayjs().add(2, "day").format("MMM/DD/YYYY"));
     thirdDayTemp.text("Temp: " + forecast.thirdDay.temperature + "°F");
     thirdDayWind.text("Wind: " + forecast.thirdDay.wind + " MPH");
     thirdDayHumid.text("Humidity: " + forecast.thirdDay.humidity + "%");
+    thirdDaySymbol.attr("src",  `https://openweathermap.org/img/wn/${forecast.thirdDay.symbol}@2x.png`);
 
     displayFourthDate.text(dayjs().add(3, "day").format("MMM/DD/YYYY"));
     fourthDayTemp.text("Temp: " + forecast.fourthDay.temperature + "°F");
     fourthDayWind.text("Wind: " + forecast.fourthDay.wind + " MPH");
     fourthDayHumid.text("Humidity: " + forecast.fourthDay.humidity + "%");
+    fourthDaySymbol.attr("src",  `https://openweathermap.org/img/wn/${forecast.fourthDay.symbol}@2x.png`);
 
     displayFifthDate.text(dayjs().add(4, "day").format("MMM/DD/YYYY"));
     fifthDayTemp.text("Temp: " + forecast.fifthDay.temperature + "°F");
     fifthDayWind.text("Wind: " + forecast.fifthDay.wind + " MPH");
     fifthDayHumid.text("Humidity: " + forecast.fifthDay.humidity + "%");
+    fifthDaySymbol.attr("src",  `https://openweathermap.org/img/wn/${forecast.fifthDay.symbol}@2x.png`);
 
     displaySixthDate.text(dayjs().add(5, "day").format("MMM/DD/YYYY"));
     sixthDayTemp.text("Temp: " + forecast.sixthDay.temperature + "°F");
     sixthDayWind.text("Wind: " + forecast.sixthDay.wind + " MPH");
     sixthDayHumid.text("Humidity: " + forecast.sixthDay.humidity + "%");
+    sixthDaySymbol.attr("src",  `https://openweathermap.org/img/wn/${forecast.sixthDay.symbol}@2x.png`);
 
 }
 
