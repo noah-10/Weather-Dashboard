@@ -56,6 +56,7 @@ var sixthDayDate = dayjs().add(5, "day").format("YYYY-MM-DD");
 
 var recentSearchDiv = $("#recent-search")
 
+
 var todayWeather = {
     temperature: null,
     wind: null,
@@ -110,7 +111,10 @@ submitBtn.on("click", function(event){
     cityInput = "";
     cityInput = $("#floatingInput-city").val();
     
+    userCity.push(cityInput);
 
+    saveWeather();
+    addCityToRecentSearch();
     getCoordinates();
 })
 
@@ -119,21 +123,25 @@ function saveWeather(){
 }
 
 function addCityToRecentSearch(){
-    userCity.push(cityInput)
+    
+    if(cityInput !== recentSearchDiv.children().eq(0) && cityInput !== recentSearchDiv.children().eq(1) && cityInput !== recentSearchDiv.children().eq(2) && cityInput !== recentSearchDiv.children().eq(3) && cityInput !== recentSearchDiv.children().eq(4)){
 
-    var recentCity = $("<input>");
-    recentCity.addClass("btn btn-primary mb-3 p-3");
-    recentCity.attr("type", "button");
-    recentCity.attr("id", "new-recent");
-    recentCity.val(cityInput.charAt(0).toUpperCase() + cityInput.slice(1)); 
-    recentSearchDiv.prepend(recentCity);
+        var recentCity = $("<input>");
+        recentCity.addClass("btn btn-secondary mb-3 p-3");
+        recentCity.attr("type", "button");
+        recentCity.attr("id", "new-recent");
+        recentCity.val(cityInput.charAt(0).toUpperCase() + cityInput.slice(1)); 
+        recentSearchDiv.prepend(recentCity);
 
-    var searchChildren = $("#recent-search").children()
-    for(var i = 0; i < searchChildren.length; i++){
-        if(i > 4){
-            searchChildren[i].remove();
-        };
+        var searchChildren = $("#recent-search").children()
+        for(var i = 0; i < searchChildren.length; i++){
+            if(i > 4){
+                searchChildren[i].remove();
+            };
     }
+    }
+
+    
 }
 
 function getTodayWeather(){
@@ -154,8 +162,8 @@ function getTodayWeather(){
     todayWeather.symbol = `https://openweathermap.org/img/wn/${symbol}@2x.png`
 
     todayImg = $("#today-symbol")
-    todayImg.attr("src", todayWeather.symbol);    
-
+    todayImg.attr("src", todayWeather.symbol);  
+    
    })
 }
 
@@ -273,8 +281,7 @@ function getCoordinates(){
         }
         cityLat = data[0].lat;
         cityLon = data[0].lon;
-        addCityToRecentSearch();
-        saveWeather();
+        
         getTodayWeather();
         getWeatherForecast();
     })
@@ -355,7 +362,7 @@ function recentSearch(){
     if(userCity !== null){
         for(var i = 0; i < userCity.length; i++){
             var recentCity = $("<input>");
-            recentCity.addClass("btn btn-primary mb-3 p-3");
+            recentCity.addClass("btn btn-secondary mb-3 p-3");
             recentCity.attr("type", "button");
             recentCity.attr("id", "new-recent");
             recentCity.val(userCity[i].charAt(0).toUpperCase() + userCity[i].slice(1)); 
@@ -378,16 +385,12 @@ function recentSearch(){
 recentSearchOption.on("click", function(event){
     cityInput = "";
     cityInput = event.target.value;
-    console.log(event.target);
-    console.log(event.target.value);
     getCoordinates();
 })
 
 $(document).on("click", "#new-recent", function(event){
     cityInput = "";
     cityInput = event.target.value;
-    console.log(event.target);
-    console.log(event.target.value);
     getCoordinates();
 })
 
