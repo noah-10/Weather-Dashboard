@@ -28,6 +28,8 @@
 
 - Learned about string interpolation inside the fetch request [link](https://medium.com/@samuelwstout/javascript-using-string-interpolation-and-fetch-to-make-a-search-form-communicate-with-an-api-abd28f303f4a)
 
+- Adding click event on new appended elements [link](https://stackoverflow.com/questions/12055462/handle-click-event-for-appended-elements-in-jquery)
+
 ## Usage
 
 - The application can be viewed by this [link](https://noah-10.github.io/Weather-Dashboard/)
