@@ -193,7 +193,7 @@ function getTodayWeather(){
 // function to get the 5 day forecast
 function getWeatherForecast(){
     // fetch api
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=16818c644b4e657d8ccc3aa7a2c735e0`)
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=16818c644b4e657d8ccc3aa7a2c735e0`)
     .then(function(response){
         return response.json()
     })
@@ -300,7 +300,7 @@ function getWeatherForecast(){
 // function to get the lat and lon for the city the user inputed
 function getCoordinates(){
     // fetch api
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=1&appid=66806939c1861a2ad06cc249d1a3a086`)
+    fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=1&appid=66806939c1861a2ad06cc249d1a3a086`)
     .then(function (response){
             return response.json()
         
