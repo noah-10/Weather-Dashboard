@@ -38,6 +38,10 @@ var sixthDaySymbol = $("#sixthDay-symbol");
 
 var submitBtn = $("#submit");
 
+var errorMessage = $("<p>");
+
+var userForm = $("#userInput")
+
 var recentSearchDiv = $("#recent-search")
 
 var recentSearchOption = $(".recent-search-option");
@@ -122,13 +126,8 @@ submitBtn.on("click", function(event){
 
     // sets the city input value to the value of the input
     cityInput = $("#floatingInput-city").val();
-    
-    // pushes the input into the array of cities the user has searched
-    userCity.push(cityInput);
 
-    // call these functions
-    saveWeather();
-    addCityToRecentSearch();
+    // call function to get coordinates
     getCoordinates();
 })
 
@@ -140,6 +139,9 @@ function saveWeather(){
 // Function for adding the user input to search history
 function addCityToRecentSearch(){
 
+    // Checks to see if the new input is already on recent searches and if not then it will be displayed
+    if(cityInput !== recentSearchDiv.children().eq(0)[0].value && cityInput !== recentSearchDiv.children().eq(1)[0].value && cityInput !== recentSearchDiv.children().eq(2)[0].value && cityInput !== recentSearchDiv.children().eq(3)[0].value && cityInput !== recentSearchDiv.children().eq(4)[0].value){
+
     // Creates a new element for the recent search history for the new user input
     var recentCity = $("<input>");
     recentCity.addClass("btn btn-secondary mb-3 p-3");
@@ -147,14 +149,19 @@ function addCityToRecentSearch(){
     recentCity.attr("id", "new-recent");
     recentCity.val(cityInput.charAt(0).toUpperCase() + cityInput.slice(1)); 
     recentSearchDiv.prepend(recentCity);
-
+    console.log(recentSearchDiv.children().eq(0)[0].value);
+    
     // if there is more then 5 elements in the search history then it will remove them to keep only 5
     var searchChildren = $("#recent-search").children()
     for(var i = 0; i < searchChildren.length; i++){
         if(i > 4){
             searchChildren[i].remove();
         };
-    }    
+    } 
+
+    // calls to save weather in local storage if the search isn't already on recent searches
+    saveWeather();
+    }
 }
 
 // function to get forecast for today
@@ -301,17 +308,30 @@ function getCoordinates(){
     .then(function (data){
         // if city cant be found the user will be alerted
         if(data[0] === undefined){
-            window.alert("Enter new city name");
+            
+            // if city can not be found then an error message will be displayed
+            errorMessage.text("City can not be found. Please try again")
+            errorMessage.addClass("text-center text-danger fw-semibold");
+            userForm.append(errorMessage);
             return;
-        }
-
+        }else {
+        
+        errorMessage.remove();  
+          
         // sets the lat and long values to the variable
         cityLat = data[0].lat;
         cityLon = data[0].lon;
+
+        // pushes the input into the array of cities the user has searched
+        cityInput = cityInput.charAt(0).toUpperCase() + cityInput.slice(1);
+        userCity.push(cityInput);
         
         // call these functions
+        addCityToRecentSearch();
         getTodayWeather();
         getWeatherForecast();
+        }
+
     })
     
 }
@@ -417,6 +437,10 @@ function recentSearch(){
 
         // will cycle through the local storage and create an element for each value to get displayed on recent search
         for(var i = 0; i < userCity.length; i++){
+
+            // Checks to make sure not to duplicate
+            if(userCity[i] !== recentSearchDiv.children().eq(0)[0].value && userCity[i] !== recentSearchDiv.children().eq(1)[0].value && userCity[i] !== recentSearchDiv.children().eq(2)[0].value && userCity[i] !== recentSearchDiv.children().eq(3)[0].value && userCity[i] !== recentSearchDiv.children().eq(4)[0].value){
+            
             var recentCity = $("<input>");
             recentCity.addClass("btn btn-secondary mb-3 p-3");
             recentCity.attr("type", "button");
@@ -425,7 +449,7 @@ function recentSearch(){
             recentSearchDiv.prepend(recentCity);
             }
             
-        }
+        }}
     
     // getting length of the recent searches
     var searchChildren = $("#recent-search").children()

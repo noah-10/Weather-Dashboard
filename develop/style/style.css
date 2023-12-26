@@ -30,6 +30,12 @@ h3 {
     font-weight: 600;
 }
 
+/* style for error message */
+#error-message{
+    display:none;
+    
+}
+
 /* Adding background color and font color */
 .list-group-item {
     background-color: var(--dark);
